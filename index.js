@@ -39,7 +39,9 @@ const getFuel = () => (
         .then((vehicle) => {
             const { make, model } = vehicle;
             const fuelLevel = vehicle.fuel_level_percent;
-            return `Your ${make} ${model} has ${fuelLevel} percent fuel remaining.`;
+            return {
+                speech: `Your ${make} ${model} has ${fuelLevel} percent fuel remaining.`,
+            };
         })
 );
 

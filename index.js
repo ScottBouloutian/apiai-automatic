@@ -60,7 +60,7 @@ module.exports =
 
         // Perform the action if it exists
         if (suffix in actions) {
-            Promise(actions[suffix])
+            Promise.resolve(actions[suffix]())
                 .then(response => callback(null, response))
                 .catch(error => callback(error));
         }

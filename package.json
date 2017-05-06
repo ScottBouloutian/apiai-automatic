@@ -1,6 +1,6 @@
 {
   "name": "apiai-automatic",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Responds to actions with data from Automatic's API",
   "main": "index.js",
   "repository": "git@github.com:ScottBouloutian/apiai-automatic.git",

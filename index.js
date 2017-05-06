@@ -1,9 +1,18 @@
-const { assign } = require('lodash');
+/* @flow */
+/* ::
+type Request = {
+    result: {
+        action: string
+    }
+};
+*/
+
 const request = require('request');
+const Promise = require('bluebird');
 
 const prefix = 'automatic';
 const apiRoot = 'https://api.automatic.com';
-const token = process.env.AUTOMATIC_TOKEN;
+const token = process.env.AUTOMATIC_TOKEN || '';
 
 // Lists all vehicles
 const listVehicles = () => (
@@ -27,13 +36,11 @@ const listVehicles = () => (
 const getFuel = () => (
     listVehicles()
         .then(vehicles => vehicles[0])
-        .then(vehicle => (
-            assign({ }, request.context, {
-                fuel: vehicle.fuel_level_percent,
-                make: vehicle.make,
-                model: vehicle.model,
-            })
-        ))
+        .then((vehicle) => {
+            const { make, model } = vehicle;
+            const fuelLevel = vehicle.fuel_level_percent;
+            return `Your ${make} ${model} has ${fuelLevel} percent fuel remaining.`;
+        })
 );
 
 // Define possible actions that can be handled
@@ -41,19 +48,20 @@ const actions = {
     getFuel,
 };
 
-module.exports = (event, context, callback) => {
-    const { action } = event.result;
-    const suffix = action.substring(prefix.length + 1);
+module.exports =
+    (event/* :Request */, context/* :{ } */, callback/* :(?Error, ?string) => void */) => {
+        const { action } = event.result;
+        const suffix = action.substring(prefix.length + 1);
 
-    // Only handle actions with a recognized prefix
-    if (action.substring(0, prefix.length + 1) !== `${prefix}.`) {
-        return;
-    }
+        // Only handle actions with a recognized prefix
+        if (action.substring(0, prefix.length + 1) !== `${prefix}.`) {
+            return;
+        }
 
-    // Perform the action if it exists
-    if (suffix in actions) {
-        Promise(actions[suffix])
-            .then(response => callback(null, response))
-            .catch(error => callback(error));
-    }
-};
+        // Perform the action if it exists
+        if (suffix in actions) {
+            Promise(actions[suffix])
+                .then(response => callback(null, response))
+                .catch(error => callback(error));
+        }
+    };

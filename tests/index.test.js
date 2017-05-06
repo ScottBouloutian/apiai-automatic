@@ -22,6 +22,8 @@ test('asking for fuel level', () => {
     });
     return eventHandler(mockEvent, null).then((response) => {
         expect(request.get.mock.calls.length).toBe(1);
-        expect(response).toBe('Your Kia Soul has 50 percent fuel remaining.');
+        expect(response).toEqual({
+            speech: 'Your Kia Soul has 50 percent fuel remaining.',
+        });
     });
 });
